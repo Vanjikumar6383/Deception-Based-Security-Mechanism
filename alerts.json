@@ -1,0 +1,247 @@
+[
+  {
+    "timestamp": "2026-04-02 22:38:58",
+    "type": "HIGH RISK BYPASS",
+    "ip": "127.0.0.1",
+    "username": "N/A",
+    "message": "Unauthorized attempt to access Admin Control Panel at /admin."
+  },
+  {
+    "timestamp": "2026-04-02 22:17:34",
+    "type": "HIGH RISK BYPASS",
+    "ip": "127.0.0.1",
+    "username": "N/A",
+    "message": "Unauthorized attempt to access Admin Control Panel at /admin."
+  },
+  {
+    "timestamp": "2026-04-02 21:54:57",
+    "type": "HIGH RISK LOGIN",
+    "ip": "127.0.0.1",
+    "username": "admin",
+    "message": "SQL Injection / Site Bypass attempt detected on login"
+  },
+  {
+    "timestamp": "2026-04-02 21:54:15",
+    "type": "HIGH RISK LOGIN",
+    "ip": "127.0.0.1",
+    "username": "admin",
+    "message": "High-risk root username 'admin' targeted (Failed Auth)"
+  },
+  {
+    "timestamp": "2026-04-02 21:02:05",
+    "type": "RECON SCAN",
+    "ip": "127.0.0.1",
+    "username": "N/A",
+    "message": "Security scanner probing detected on path: /robots.txt"
+  },
+  {
+    "timestamp": "2026-04-02 21:01:46",
+    "type": "HIGH RISK BYPASS",
+    "ip": "127.0.0.1",
+    "username": "N/A",
+    "message": "Unauthorized attempt to access Admin Control Panel at /admin."
+  },
+  {
+    "timestamp": "2026-04-02 13:01:30",
+    "type": "HIGH RISK BYPASS",
+    "ip": "127.0.0.1",
+    "username": "N/A",
+    "message": "Unauthorized attempt to access Admin Control Panel at /admin."
+  },
+  {
+    "timestamp": "2026-04-02 12:20:37",
+    "type": "HIGH RISK LOGIN",
+    "ip": "127.0.0.1",
+    "username": "will",
+    "message": "SQL Injection / Site Bypass attempt detected on login"
+  },
+  {
+    "timestamp": "2026-04-02 12:19:49",
+    "type": "HIGH RISK LOGIN",
+    "ip": "127.0.0.1",
+    "username": "henry",
+    "message": "SQL Injection / Site Bypass attempt detected on login"
+  },
+  {
+    "timestamp": "2026-04-02 12:19:48",
+    "type": "HIGH RISK LOGIN",
+    "ip": "127.0.0.1",
+    "username": "henry",
+    "message": "SQL Injection / Site Bypass attempt detected on login"
+  },
+  {
+    "timestamp": "2026-04-02 12:19:48",
+    "type": "HIGH RISK LOGIN",
+    "ip": "127.0.0.1",
+    "username": "henry",
+    "message": "SQL Injection / Site Bypass attempt detected on login"
+  },
+  {
+    "timestamp": "2026-04-02 12:19:48",
+    "type": "HIGH RISK LOGIN",
+    "ip": "127.0.0.1",
+    "username": "henry",
+    "message": "SQL Injection / Site Bypass attempt detected on login"
+  },
+  {
+    "timestamp": "2026-04-02 12:19:47",
+    "type": "HIGH RISK LOGIN",
+    "ip": "127.0.0.1",
+    "username": "henry",
+    "message": "SQL Injection / Site Bypass attempt detected on login"
+  },
+  {
+    "timestamp": "2026-04-02 12:19:46",
+    "type": "HIGH RISK LOGIN",
+    "ip": "127.0.0.1",
+    "username": "henry",
+    "message": "SQL Injection / Site Bypass attempt detected on login"
+  },
+  {
+    "timestamp": "2026-04-02 12:18:33",
+    "type": "HIGH RISK BYPASS",
+    "ip": "127.0.0.1",
+    "username": "N/A",
+    "message": "Unauthorized attempt to access Admin Control Panel at /admin."
+  },
+  {
+    "timestamp": "2026-04-02 12:18:28",
+    "type": "HIGH RISK BYPASS",
+    "ip": "127.0.0.1",
+    "username": "N/A",
+    "message": "Unauthorized attempt to access Admin Control Panel at /admin."
+  },
+  {
+    "timestamp": "2026-04-02 11:43:59",
+    "type": "HIGH RISK BYPASS",
+    "ip": "127.0.0.1",
+    "username": "N/A",
+    "message": "Unauthorized attempt to access Admin Control Panel at /admin."
+  },
+  {
+    "timestamp": "2026-04-02 10:55:26",
+    "type": "HIGH RISK BYPASS",
+    "ip": "127.0.0.1",
+    "username": "N/A",
+    "message": "Unauthorized attempt to access Admin Control Panel at /admin."
+  },
+  {
+    "timestamp": "2026-04-02 10:55:20",
+    "type": "HIGH RISK BYPASS",
+    "ip": "127.0.0.1",
+    "username": "N/A",
+    "message": "Unauthorized attempt to access Admin Control Panel at /admin."
+  },
+  {
+    "timestamp": "2026-04-02 10:55:06",
+    "type": "HIGH RISK BYPASS",
+    "ip": "127.0.0.1",
+    "username": "N/A",
+    "message": "Unauthorized attempt to access Admin Control Panel at /admin."
+  },
+  {
+    "timestamp": "2026-04-02 10:54:48",
+    "type": "HIGH RISK BYPASS",
+    "ip": "127.0.0.1",
+    "username": "N/A",
+    "message": "Unauthorized attempt to access Admin Control Panel at /admin."
+  },
+  {
+    "timestamp": "2026-04-02 10:53:43",
+    "type": "HIGH RISK LOGIN",
+    "ip": "127.0.0.1",
+    "username": "rethick",
+    "message": "SQL Injection / Site Bypass attempt detected on login"
+  },
+  {
+    "timestamp": "2026-04-02 10:48:08",
+    "type": "HIGH RISK BYPASS",
+    "ip": "127.0.0.1",
+    "username": "N/A",
+    "message": "Unauthorized attempt to access Admin Control Panel at /admin."
+  },
+  {
+    "timestamp": "2026-04-02 10:47:31",
+    "type": "HIGH RISK BYPASS",
+    "ip": "127.0.0.1",
+    "username": "N/A",
+    "message": "Unauthorized attempt to access Admin Control Panel at /admin."
+  },
+  {
+    "timestamp": "2026-04-02 10:47:18",
+    "type": "HIGH RISK BYPASS",
+    "ip": "127.0.0.1",
+    "username": "N/A",
+    "message": "Unauthorized attempt to access Admin Control Panel at /admin."
+  },
+  {
+    "timestamp": "2026-04-02 10:42:34",
+    "type": "HIGH RISK LOGIN",
+    "ip": "127.0.0.1",
+    "username": "admin",
+    "message": "High-risk root username 'admin' targeted (Failed Auth)"
+  },
+  {
+    "timestamp": "2026-04-02 10:42:27",
+    "type": "HIGH RISK LOGIN",
+    "ip": "127.0.0.1",
+    "username": "admin",
+    "message": "High-risk root username 'admin' targeted (Failed Auth)"
+  },
+  {
+    "timestamp": "2026-04-02 10:29:12",
+    "type": "HIGH RISK LOGIN",
+    "ip": "127.0.0.1",
+    "username": "admin",
+    "message": "High-risk root username 'admin' targeted"
+  },
+  {
+    "timestamp": "2026-04-02 10:17:49",
+    "type": "HIGH RISK LOGIN",
+    "ip": "127.0.0.1",
+    "username": "admin",
+    "message": "High-risk root username 'admin' targeted"
+  },
+  {
+    "timestamp": "2026-04-02T03:55:43.875528+00:00",
+    "type": "HIGH RISK LOGIN",
+    "ip": "127.0.0.1",
+    "username": "admin",
+    "message": "High-risk username 'admin' targeted"
+  },
+  {
+    "timestamp": "2026-04-02T03:52:06.026146+00:00",
+    "type": "HIGH RISK LOGIN",
+    "ip": "127.0.0.1",
+    "username": "admin",
+    "message": "SQL Injection / Site Bypass attempt detected"
+  },
+  {
+    "timestamp": "2026-04-02T03:51:26.923710+00:00",
+    "type": "HIGH RISK LOGIN",
+    "ip": "127.0.0.1",
+    "username": "admin",
+    "message": "SQL Injection / Site Bypass attempt detected"
+  },
+  {
+    "timestamp": "2026-04-02T03:49:23.910214+00:00",
+    "type": "HIGH RISK LOGIN",
+    "ip": "127.0.0.1",
+    "username": "or 1=1",
+    "message": "SQL Injection / Site Bypass attempt detected"
+  },
+  {
+    "timestamp": "2026-04-01T16:07:11.782530+00:00",
+    "type": "HIGH RISK LOGIN",
+    "ip": "127.0.0.1",
+    "username": "admin",
+    "message": "Privileged username 'admin' targeted"
+  },
+  {
+    "timestamp": "2026-04-01T16:07:11.744007+00:00",
+    "type": "HIGH RISK LOGIN",
+    "ip": "127.0.0.1",
+    "username": "admin",
+    "message": "Privileged username 'admin' targeted"
+  }
+]

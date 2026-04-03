@@ -1,0 +1,10 @@
+{
+  "email_recipients": "confidentpike4@getsafesurfer.com",
+  "slack_webhook": "",
+  "sms_recipient": "",
+  "onesignal_app_id": "",
+  "onesignal_api_key": "",
+  "onesignal_player_id": "",
+  "threshold_count": 3,
+  "threshold_minutes": 5
+}

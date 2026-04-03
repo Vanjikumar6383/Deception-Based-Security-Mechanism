@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuantumCore | Threat Intel Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #030305;
+            --surface: #0a0b10;
+            --surface-glass: rgba(10, 11, 16, 0.6);
+            --primary: #ff1e38;
+            --primary-glow: rgba(255, 30, 56, 0.4);
+            --accent: #ff4a5f;
+            --border: #232533;
+            --text: #e0e2eb;
+            --text-dim: #797c8f;
+            --warning: #ffb142;
+            --success: #33d9b2;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient grid */
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background: 
+                linear-gradient(rgba(255, 30, 56, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 30, 56, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px; z-index: -1;
+            mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 250px; background: rgba(5, 5, 8, 0.9);
+            border-right: 1px solid var(--border);
+            display: flex; flex-direction: column;
+            padding: 2.5rem 1.5rem; position: fixed; height: 100vh; z-index: 10;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        }
+
+        .brand-logo {
+            display: flex; align-items: center; gap: 12px; margin-bottom: 3rem;
+        }
+        .brand-icon {
+            width: 40px; height: 40px; background: rgba(255, 30, 56, 0.1);
+            border: 1px solid var(--primary); border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+        .brand-icon svg { width: 22px; height: 22px; color: var(--primary); }
+        .brand-text { font-size: 1.4rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #fff;}
+
+        .nav-links { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+        .nav-item {
+            padding: 12px 16px; border-radius: 0;
+            color: var(--text-dim); text-decoration: none; font-size: 1.1rem;
+            font-weight: 600; display: flex; align-items: center; gap: 12px; transition: 0.2s;
+            position: relative; border-left: 2px solid transparent; letter-spacing: 1px; text-transform: uppercase;
+        }
+        .nav-item:hover, .nav-item.active { background: rgba(255, 30, 56, 0.05); color: #fff; border-left: 2px solid var(--primary); }
+        .nav-item svg { width: 18px; opacity: 0.7; }
+        .nav-item.active svg { color: var(--primary); opacity: 1; }
+
+        .system-status {
+            padding-top: 2rem; border-top: 1px solid var(--border);
+            font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--primary);
+            text-transform: uppercase; text-align: center; letter-spacing: 2px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 250px; flex: 1; padding: 3rem; max-width: 1400px; width: calc(100% - 250px);
+        }
+
+        .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; }
+        .page-title { font-size: 2.2rem; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 0.2rem; display: flex; align-items: center; gap: 15px;}
+        .page-subtitle { color: var(--text-dim); font-size: 1.1rem; font-weight: 500; letter-spacing: 1px;}
+        
+        .live-indicator {
+            background: rgba(255, 30, 56, 0.1); border: 1px solid rgba(255, 30, 56, 0.5);
+            padding: 8px 20px; font-family: 'JetBrains Mono', monospace; font-weight: 700;
+            color: var(--primary); letter-spacing: 2px; font-size: 0.8rem;
+            box-shadow: 0 0 25px rgba(255, 30, 56, 0.3), inset 0 0 10px rgba(255, 30, 56, 0.2); 
+            display: flex; align-items: center; gap: 10px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .blinking-dot { width: 8px; height: 8px; background: var(--primary); border-radius: 50%; animation: blink 1s infinite alternate; }
+        @keyframes blink { 0% { opacity: 0.2; box-shadow: 0 0 0 transparent; } 100% { opacity: 1; box-shadow: 0 0 12px var(--primary); } }
+
+        /* Stats Blocks (Glassmorphism & Neon Glow) */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 3rem; }
+        .stat-card {
+            --glow-color: var(--primary); /* Fallback */
+            background: rgba(10, 11, 16, 0.2); 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 30, 56, 0.2); 
+            padding: 1.8rem; position: relative;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1; overflow: hidden;
+        }
+        
+        /* Specific Severity Overrides */
+        .card-critical { --glow-color: var(--primary); border-color: rgba(255, 30, 56, 0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(255, 30, 56, 0.05); }
+        .card-critical:hover { box-shadow: 0 15px 40px rgba(255, 30, 56, 0.15); }
+        
+        .card-warn { --glow-color: var(--warning); border-color: rgba(255, 177, 66, 0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(255, 177, 66, 0.05); }
+        .card-warn:hover { box-shadow: 0 15px 40px rgba(255, 177, 66, 0.15); }
+        
+        .card-success { --glow-color: var(--success); border-color: rgba(51, 217, 178, 0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(51, 217, 178, 0.05); }
+        .card-success:hover { box-shadow: 0 15px 40px rgba(51, 217, 178, 0.15); }
+
+        .card-info { --glow-color: #60a5fa; border-color: rgba(96, 165, 250, 0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(96, 165, 250, 0.05); }
+        .card-info:hover { box-shadow: 0 15px 40px rgba(96, 165, 250, 0.15); }
+
+        /* Spinning Conic Gradient (Neon Border Light) */
+        .stat-card::before {
+            content: ''; position: absolute;
+            width: 200%; height: 200%;
+            background: conic-gradient(from 0deg, transparent 70%, var(--glow-color) 100%);
+            top: -50%; left: -50%; z-index: -2; opacity: 0;
+            transition: opacity 0.4s;
+            animation: traceBorder 2s linear infinite;
+        }
+
+        /* Inner Glass Mask */
+        .stat-card::after {
+            content: ''; position: absolute; inset: 2px; 
+            background: rgba(10, 11, 16, 0.75); 
+            border-radius: 14px; z-index: -1; backdrop-filter: blur(15px);
+        }
+
+        @keyframes traceBorder { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .stat-card:hover { border-color: transparent; transform: translateY(-8px); }
+        .stat-card:hover::before { opacity: 1; }
+
+        
+        .stat-label { font-size: 0.9rem; font-weight: 600; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.5rem; }
+        .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 2.5rem; font-weight: 700; color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.2); }
+        .text-neon-red { color: var(--primary); text-shadow: 0 0 15px var(--primary-glow); }
+
+        /* Glass Data Panels */
+        .data-panel {
+            background: rgba(10, 11, 16, 0.45); 
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            margin-bottom: 2.5rem; position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.02);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .panel-header {
+            padding: 1.5rem 2rem; border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .panel-title { font-size: 1.3rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
+        .data-count { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--primary); padding: 5px 12px; background: rgba(255, 30, 56, 0.15); border: 1px solid rgba(255, 30, 56, 0.4); border-radius: 8px; box-shadow: 0 0 15px rgba(255, 30, 56, 0.2);}
+
+        /* Scrollable Data Containers */
+        .table-scroller { max-height: 280px; overflow-y: auto; border-top: 1px solid transparent; }
+        .table-scroller::-webkit-scrollbar { width: 8px; height: 8px;}
+        .table-scroller::-webkit-scrollbar-track { background: transparent; }
+        .table-scroller::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .table-scroller::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        table { width: 100%; border-collapse: collapse; }
+        /* Frosted Glass Sticky Header */
+        th { 
+            text-align: left; padding: 1.2rem 2rem; color: var(--text-dim); font-size: 0.9rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; 
+            background: rgba(5, 6, 9, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            position: sticky; top: 0; z-index: 5; border-bottom: 1px solid rgba(255,255,255,0.05); 
+        }
+        td { padding: 1.2rem 2rem; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 1.05rem; font-weight: 500; }
+        tr:hover td { background: rgba(255, 30, 56, 0.08); }
+
+        .dt-mono { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #aaa; }
+        .dt-ip { font-family: 'JetBrains Mono', monospace; color: #fff; font-weight: 700; letter-spacing: 1px; }
+        
+        /* Tactical Badges with Soft Glow */
+        .badge { padding: 6px 14px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; border-radius: 12px; border: 1px solid; display: inline-block; }
+        .badge-critical { background: rgba(255, 30, 56, 0.15); color: var(--primary); border-color: rgba(255, 30, 56, 0.4); box-shadow: 0 0 15px rgba(255, 30, 56, 0.3); text-shadow: 0 0 8px var(--primary-glow); }
+        .badge-warn { background: rgba(255, 177, 66, 0.1); color: var(--warning); border-color: rgba(255, 177, 66, 0.3); box-shadow: 0 0 15px rgba(255, 177, 66, 0.2); }
+        .badge-info { background: rgba(51, 217, 178, 0.1); color: var(--success); border-color: rgba(51, 217, 178, 0.3); box-shadow: 0 0 15px rgba(51, 217, 178, 0.2); }
+        .badge-recon { background: rgba(59, 130, 246, 0.1); color: #60a5fa; border-color: rgba(59, 130, 246, 0.3); box-shadow: 0 0 15px rgba(59, 130, 246, 0.2); }
+
+        .hash-code { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-dim); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        /* Real-Time Alert Popup system */
+        .toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; flex-direction: column; gap: 15px; }
+        .cyber-toast {
+            background: rgba(10, 11, 16, 0.95); border-left: 4px solid var(--primary); padding: 20px 25px;
+            box-shadow: 0 0 40px rgba(255, 30, 56, 0.6), inset 0 0 20px rgba(255, 30, 56, 0.2); width: 380px;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
+            animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border); border-right: 1px solid var(--border);
+        }
+        @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-20px); } }
+        
+        .toast-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;}
+        .toast-type { font-family: 'JetBrains Mono', monospace; font-weight: 800; color: var(--primary); font-size: 0.9rem; letter-spacing: 1px; animation: glitchText 0.3s infinite alternate;}
+        @keyframes glitchText { 0% { text-shadow: 2px 0 #0ff, -2px 0 #f0f; } 100% { text-shadow: -2px 0 #0ff, 2px 0 #f0f; } }
+        .toast-time { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #777;}
+        .toast-body { font-size: 0.95rem; color: #fff; margin-bottom: 5px; line-height: 1.4; font-weight: 600; }
+        .toast-ip { display: inline-block; background: rgba(255,255,255,0.1); padding: 3px 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; margin-top: 5px; color: #bbb;}
+
+        /* Visual Screen Flash Alarm */
+        @keyframes screenFlash {
+            0% { box-shadow: inset 0 0 0 transparent; }
+            50% { box-shadow: inset 0 0 150px rgba(255, 30, 56, 0.4); }
+            100% { box-shadow: inset 0 0 0 transparent; }
+        }
+        .flash-active { animation: screenFlash 0.5s 4; }
+    </style>
+</head>
+<body>
+
+    <!-- Tactical Sidebar -->
+    <nav class="sidebar">
+        <div class="brand-logo">
+            <div class="brand-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+            <div class="brand-text">QuantumCore</div>
+        </div>
+        <div class="nav-links">
+            <a href="/logs" class="nav-item active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                Threat Intel
+            </a>
+            <a href="/admin/settings" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                Core Settings
+            </a>
+            <a href="/login" class="nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                Deploy Trap
+            </a>
+        </div>
+        <div class="system-status">DECEPTION ENGINE // ACTIVE</div>
+    </nav>
+
+    <!-- Main Command Center -->
+    <main class="main-content">
+        
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1 class="page-title">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="3"><polygon points="12 2 22 21 2 21"></polygon></svg>
+                    Command Interface
+                </h1>
+                <p class="page-subtitle">Real-time forensic monitoring and trap analysis.</p>
+            </div>
+            <div class="live-indicator">
+                <div class="blinking-dot"></div> SYS.SEC.ARMED
+            </div>
+        </div>
+
+        <!-- Telemetry Stats -->
+        <div class="stats-grid">
+            <div class="stat-card card-info">
+                <div class="stat-label">Total Engagements</div>
+                <div class="stat-value" style="color: #60a5fa; text-shadow: 0 0 15px rgba(96, 165, 250, 0.4);">{{ logs|length }}</div>
+            </div>
+            <div class="stat-card card-critical">
+                <div class="stat-label">Critical Incursions</div>
+                <div class="stat-value text-neon-red">{{ logs|selectattr('risk_level','equalto','HIGH RISK')|list|length }}</div>
+            </div>
+            <div class="stat-card card-warn">
+                <div class="stat-label">Suspicious Probes</div>
+                <div class="stat-value" style="color:var(--warning); text-shadow: 0 0 15px rgba(255, 177, 66, 0.4);">{{ logs|selectattr('risk_level','equalto','SUSPICIOUS')|list|length }}</div>
+            </div>
+            <div class="stat-card card-success">
+                <div class="stat-label">Tactical Alerts</div>
+                <div class="stat-value" style="color:var(--success); text-shadow: 0 0 15px rgba(51, 217, 178, 0.4);">{{ alerts|length }}</div>
+            </div>
+        </div>
+
+        <!-- Alerts Data Panel -->
+        <div class="data-panel" style="border-top: 3px solid var(--primary);">
+            <div class="panel-header">
+                <div class="panel-title">Priority Security Alerts</div>
+                <div class="data-count">[{{ alerts|length }} ENTRIES]</div>
+            </div>
+            <div class="table-scroller">
+            <table>
+                <thead>
+                    <tr>
+                        <th>T-Minus</th>
+                        <th>Classification</th>
+                        <th>Target Route</th>
+                        <th>Forensic Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in alerts %}
+                    <tr>
+                        <td class="dt-mono">{{ a.timestamp[:19].replace('T',' ') }}</td>
+                        <td>
+                            <span class="badge {% if a.type == 'HIGH RISK LOGIN' %}badge-critical{% elif a.type == 'RECON SCAN' %}badge-recon{% else %}badge-info{% endif %}">
+                                [{{ a.type }}]
+                            </span>
+                        </td>
+                        <td class="dt-ip">{{ a.ip }}</td>
+                        <td style="color: #bbb;">{{ a.message }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+            {% if not alerts %}
+            <div style="padding: 4rem; text-align: center; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;">
+                > NO ANOMALIES DETECTED IN SECTOR.
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Alert History Data Panel (Task 3 Extension) -->
+        <div class="data-panel" style="border-top: 3px solid var(--success);">
+            <div class="panel-header">
+                <div class="panel-title" style="color:var(--success);">External Notification Telemetry</div>
+                <div class="data-count" style="color:var(--success); border-color:var(--success);">[{{ history|length }} SENT]</div>
+            </div>
+            <div class="table-scroller">
+            <table>
+                <thead>
+                    <tr>
+                        <th>T-Minus</th>
+                        <th>Comm Link</th>
+                        <th>Target Destination</th>
+                        <th>Event Payload Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for h in history %}
+                    <tr>
+                        <td class="dt-mono">{{ h.timestamp[:19].replace('T',' ') }}</td>
+                        <td>
+                            <span class="badge badge-info">[{{ h.channel|upper }}]</span>
+                        </td>
+                        <td style="color:#aaa; font-weight:600;">{{ h.target }}</td>
+                        <td style="color:#bbb;">{{ h.event }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+            {% if not history %}
+            <div style="padding: 4rem; text-align: center; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;">
+                > NO EXTERNAL ALERTS DISPATCHED.
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Trapped Logs Data Panel -->
+        <div class="data-panel">
+            <div class="panel-header">
+                <div class="panel-title">Raw Interaction Logs</div>
+                <div class="data-count">[{{ logs|length }} ENTRIES]</div>
+            </div>
+            <div class="table-scroller" style="overflow-x:auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>T-Minus</th>
+                        <th>Origin IP</th>
+                        <th>User Identifier</th>
+                        <th>Payload/Passcode</th>
+                        <th>Threat Vector</th>
+                        <th>Reasoning Engine</th>
+                        <th>Crypto-Hash</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td class="dt-mono" style="white-space:nowrap;">{{ log.timestamp[:19].replace('T',' ') }}</td>
+                        <td class="dt-ip">{{ log.ip_address }}</td>
+                        <td style="font-weight: 700; color: #fff;">{{ log.username }}</td>
+                        <td class="dt-mono" style="color: #999;">{{ log.password }}</td>
+                        <td>
+                            <span class="badge {% if log.risk_level == 'HIGH RISK' %}badge-critical{% else %}badge-warn{% endif %}">
+                                {{ log.risk_level }}
+                            </span>
+                        </td>
+                        <td style="color: #bbb;">{{ log.reason }}</td>
+                        <td><div class="hash-code" title="{{ log.hash }}">{{ log.hash }}</div></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+            {% if not logs %}
+            <div style="padding: 4rem; text-align: center; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;">
+                > LOGGING MATRIX EMPTY. AWAITING INCURSION.
+            </div>
+            {% endif %}
+        </div>
+
+        </div>
+
+    </main>
+
+    <!-- Popup Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        let lastReportedSig = null;
+
+        function playAlarmSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                if(ctx.state === 'suspended') { ctx.resume(); } // Browser autoplay policies
+                
+                // Creates a harsh cyber "Beep-Boop" alarm tone
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(800, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.3);
+                
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.3);
+
+                // Flash the screen red
+                document.body.classList.add("flash-active");
+                setTimeout(() => document.body.classList.remove("flash-active"), 2000);
+            } catch (e) { console.log('Audio disabled by browser policy'); }
+        }
+
+        function checkAlerts() {
+            fetch('/api/latest_alert')
+                .then(res => res.json())
+                .then(data => {
+                    if (Object.keys(data).length === 0) return; // No alerts
+                    
+                    const currentSig = data.timestamp + data.ip + data.type;
+                    
+                    if (!lastReportedSig) {
+                        lastReportedSig = currentSig; // Baseline
+                        return;
+                    }
+
+                    if (currentSig !== lastReportedSig) {
+                        lastReportedSig = currentSig;
+                        showToast(data);
+                        playAlarmSound(); // Trigger Audio and Visual flash
+                        
+                        // Force refresh the page data silently after a delay (to update the tables)
+                        setTimeout(() => location.reload(), 3000); 
+                    }
+                })
+                .catch(err => console.error("Polling error:", err));
+        }
+
+        function showToast(alertData) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'cyber-toast';
+            toast.innerHTML = `
+                <div class="toast-header">
+                    <span class="toast-type">[!] ${alertData.type}</span>
+                    <span class="toast-time">${alertData.timestamp.split(' ')[1]}</span>
+                </div>
+                <div class="toast-body">${alertData.message}</div>
+                <div class="toast-ip">THREAT ORIGIN: ${alertData.ip}</div>
+            `;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.5s forwards';
+                setTimeout(() => toast.remove(), 500);
+            }, 6000);
+        }
+
+        setInterval(checkAlerts, 2000);
+    </script>
+</body>
+</html>

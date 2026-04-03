@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaMart | Customer Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --primary: #8b5cf6;
+            --text: #0f172a;
+            --text-dim: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
+        
+        .navbar {
+            background: #0f172a; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; color: white;
+        }
+        .navbar h2 { font-family: 'Outfit', sans-serif; margin: 0; color: #fff; }
+        .navbar h2 span { color: var(--primary); }
+        .user-info { display: flex; align-items: center; gap: 20px; font-size: 0.9rem;}
+        .btn-logout { background: #fff; color: #0f172a; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+        .btn-logout:hover { background: #e2e8f0; }
+
+        .container { max-width: 1000px; margin: 50px auto; padding: 0 20px; }
+        
+        .welcome { margin-bottom: 30px; }
+        .welcome h1 { font-family: 'Outfit', sans-serif; font-size: 2rem; color: #0f172a; }
+        
+        /* Search Box / Honeypot */
+        .search-box {
+            background: var(--surface); border: 1px solid var(--border); padding: 30px; margin-bottom: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .search-box h3 { font-family: 'Outfit', sans-serif; font-size: 1.25rem; margin-bottom: 8px; color: #0f172a;}
+        
+        form { display: flex; gap: 15px; margin-top: 15px;}
+        input[type="text"] {
+            flex: 1; border: 1px solid var(--border); padding: 12px 15px; border-radius: 8px;
+            font-family: 'Inter', sans-serif; font-size: 1rem; outline: none; transition: 0.3s;
+        }
+        input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2); }
+        button {
+            background: var(--primary); color: white; border: none; border-radius: 8px;
+            padding: 12px 25px; cursor: pointer; font-weight: 600; transition: 0.3s;
+        }
+        button:hover { background: #7c3aed; }
+
+        .data-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);}
+        .panel-header { padding: 20px; border-bottom: 1px solid var(--border); font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 1.1rem; background: #f8fafc;}
+        
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { padding: 15px 20px; background: #fff; color: var(--text-dim); font-size: 0.85rem; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+        td { padding: 15px 20px; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+        tr:hover td { background: #f8fafc; }
+
+        .status-badge { padding: 4px 10px; font-size: 0.8rem; border-radius: 20px; font-weight: 500; }
+        .st-delivered { background: #dcfce7; color: #166534; }
+        .st-processing { background: #fef9c3; color: #854d0e; }
+        .st-shipped { background: #dbeafe; color: #1e40af; }
+        .st-refund { background: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <h2>Nova<span>Mart</span></h2>
+        <div class="user-info">
+            <span>Customer: <strong>{{ username }}</strong></span>
+            <a href="/logout" class="btn-logout">Sign Out</a>
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <div class="welcome">
+            <h1>My Dashboard</h1>
+            <p style="color: var(--text-dim);">Track your recent packages and view order history.</p>
+        </div>
+
+        <!-- VULNERABLE LOOKING SEARCH BOX (HONEYPOT) -->
+        <div class="search-box">
+            <h3>Locate Order Details</h3>
+            <p style="color: var(--text-dim); font-size: 0.9rem;">
+                Search by product name or Order ID (e.g., ORD-9021).
+            </p>
+            <form action="/search" method="GET">
+                <input type="text" name="q" placeholder="Tracking Number or Product..." value="{{ query if query else '' }}" required autocomplete="off">
+                <button type="submit">Search Orders</button>
+            </form>
+        </div>
+
+        <div class="data-panel">
+            <div class="panel-header">Recent Orders [{{ items|length }} found]</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Product Item</th>
+                        <th>Total Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td style="font-family: monospace; font-weight: 600; color: var(--primary);">{{ item[1] }}</td>
+                        <td style="font-weight: 500;">{{ item[0] }}</td>
+                        <td>{{ item[3] }}</td>
+                        <td>
+                            <span class="status-badge 
+                                {% if 'Delivered' in item[2] %}st-delivered
+                                {% elif 'Shipped' in item[2] %}st-shipped
+                                {% elif 'Refunded' in item[2] %}st-refund
+                                {% else %}st-processing{% endif %}">
+                                {{ item[2] }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 40px; color: var(--text-dim);">No matching orders found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>
