@@ -252,9 +252,11 @@ implementation.
 
 SCREENSHOT 2: THE SOC DASHBOARD VISUALIZING THE
 'LABYRINTH' TELEMETRY AND THE STATUS OF CHAINED LOGS.
+
 VII. ETHICAL DECEPTION
 AND THE HACKER'S
 MINDSET
+
 Building a system that lies to people, even criminals, raises important
 ethical questions. During my internship, I had several long
 discussions with my mentor about the "Ethics of Honeypots." Is it
@@ -270,9 +272,11 @@ remaining ethically aligned with the defense—is what makes this task
 so vital. Itʼs about being the "Gray Hat" that protects the system from
 the "Black Hats." It felt good to finally see the world in through a
 defensive lens that was just as creative as the offensive one.
+
 VIII. INTERNSHIP
 LEGACY: THE FUTURE OF
 'BLACK-OPS'
+
 Task 3 was more than just an assessment for me; it was the start of a
 recurring theme in my career. I've seen first-hand how much more
 effective an "Active Defense" is compared to a passive one. I leaves
@@ -282,7 +286,9 @@ specifically the integration of AI-driven deception, which can
 dynamically generate new trap files on-the-fly to keep up with faster,
 more intelligent scanners. I feel ready for the challenges of a full-time
 SOC role now.
+
 IX. CONCLUSION
+
 Building this deception mechanism taught me that the best security
 isn't just about "stopping" people—it's about "managing" them. By
 giving an attacker something to do, we gain control over the
@@ -301,5 +307,6 @@ am proud of the forensic robustness I've achieved. It has been a truly
 rewarding experience to build something that isn't just about walls,
 but about "Digital Camouflage" and "Cyber-Psychology." This is what
 I was meant to do.
+
 VANJIKUMAR S - CYBERSECURITY INTERNSHIP - TASK 3
 ( DECEPTION ENGINE) - FINAL SUBMISSION 2026
